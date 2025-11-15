@@ -18,6 +18,7 @@ int currentFanSpeed = 0;
 // Timing variables
 unsigned long lastTempHumidityRead = 0;
 unsigned long lastMotionDetectionTime = 0;
+unsigned long lastBeaconScan = 0;
 
 void setup()
 {
@@ -69,6 +70,19 @@ void loop()
         Serial.print(pirDetections);
         Serial.print(", Visits: ");
         Serial.println(visitCount);
+    }
+
+    // Scan for Bluetooth beacon every 5 seconds
+    if (currentMillis - lastBeaconScan >= BEACON_SCAN_INTERVAL)
+    {
+        scanForBeacon();
+        tagDetected = isTagDetected();
+        lastBeaconScan = currentMillis;
+
+        if (tagDetected)
+        {
+            Serial.println("Bluetooth tag detected!");
+        }
     }
 
     previousMotionState = motionDetected;
