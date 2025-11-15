@@ -13,4 +13,7 @@ bool isMotionDetected();
 // Check if Bluetooth tag is detected
 bool isTagDetected();
 
+// Scan for Bluetooth beacon
+void scanForBeacon();
+
 #endif

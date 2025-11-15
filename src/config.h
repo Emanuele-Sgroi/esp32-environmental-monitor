@@ -27,4 +27,8 @@
 // PIR Debounce (milliseconds)
 #define PIR_RETRIGGER_DELAY 3000 // Ignore motion for 3 seconds after detection
 
+// Bluetooth Beacon Settings
+#define BEACON_SCAN_INTERVAL 5000 // Scan every 5 seconds
+#define BEACON_SCAN_DURATION 3    // Scan for 3 seconds each time
+
 #endif
