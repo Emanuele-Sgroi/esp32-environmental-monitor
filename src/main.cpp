@@ -1,92 +1,94 @@
 #include <Arduino.h>
-#include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
+#include "config.h"
+#include "sensors.h"
+#include "display.h"
+#include "actuators.h"
+#include "logic.h"
 
-// LET'S GOOOOOOO
+// Global variables
+float temperature = 0.0;
+float humidity = 0.0;
+int pirDetections = 0;
+int visitCount = 0;
+bool tagDetected = false;
+bool motionDetected = false;
+bool previousMotionState = false;
+int currentFanSpeed = 0;
 
-// First thing, I'll write "Hello World" on the oled screen
-
-// Define constants
-
-// oled constants
-#define SCREEN_WIDTH 128    // size
-#define SCREEN_HEIGHT 64    // size
-#define OLED_RESET -1       // pin
-#define SCREEN_ADDRESS 0x3C // address
-
-// RGB led constants
-#define LED_RED 16
-#define LED_GREEN 17
-#define LED_BLUE 18
-
-// FAN constants
-#define FAN_INA 25
-#define FAN_INB 26
-
-// create a display object
-
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
-
-// ADD MAIN FUNCTIONS
-
-// setup function
+// Timing variables
+unsigned long lastTempHumidityRead = 0;
 
 void setup()
 {
+    // Initialize serial
+    Serial.begin(115200);
+    Serial.println("Starting...");
 
-    pinMode(LED_RED, OUTPUT);
-    pinMode(LED_GREEN, OUTPUT);
-    pinMode(LED_BLUE, OUTPUT);
+    // Initialize all modules
+    initSensors();
+    initDisplay();
+    initActuators();
 
-    pinMode(FAN_INA, OUTPUT);
-    pinMode(FAN_INB, OUTPUT);
+    // Show startup message
+    showStartupMessage();
 
-    Serial.begin(115200); // USB communication
-    Wire.begin(21, 22);   // Initialize I2C
-
-    if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS))
-    {
-        Serial.println("SSD1306 allocation failed");
-        for (;;)
-            ;
-    }
-
-    display.clearDisplay();
-
-    display.setTextSize(1);
-    display.setTextColor(SSD1306_WHITE);
-    display.setCursor(0, 2);
-
-    display.println("Hello World");
-
-    display.display();
-    Serial.println("OLED initialized successfully!");
+    Serial.println("System ready!");
 }
 
 void loop()
 {
-    digitalWrite(LED_RED, HIGH);
-    delay(500);
-    digitalWrite(LED_RED, LOW);
-    delay(500);
-    digitalWrite(LED_BLUE, HIGH);
-    delay(500);
-    digitalWrite(LED_BLUE, LOW);
-    delay(500);
-    digitalWrite(LED_GREEN, HIGH);
-    delay(100);
-    digitalWrite(LED_GREEN, LOW);
-    delay(100);
-    digitalWrite(LED_GREEN, HIGH);
-    delay(100);
-    digitalWrite(LED_GREEN, LOW);
-    delay(100);
+    unsigned long currentMillis = millis();
 
-    digitalWrite(FAN_INA, HIGH);
-    digitalWrite(FAN_INB, LOW);
-    delay(2000);
-    digitalWrite(FAN_INA, LOW);
-    digitalWrite(FAN_INB, LOW);
-    delay(2000);
+    // Read temperature and humidity every 2 minutes
+    if (currentMillis - lastTempHumidityRead >= TEMP_HUMIDITY_INTERVAL)
+    {
+        readTempHumidity(temperature, humidity);
+        lastTempHumidityRead = currentMillis;
+
+        Serial.print("Temperature: ");
+        Serial.print(temperature);
+        Serial.print("°C, Humidity: ");
+        Serial.print(humidity);
+        Serial.println("%");
+    }
+
+    // Check for motion detection
+    motionDetected = isMotionDetected();
+
+    // If motion just detected (transition from LOW to HIGH)
+    if (motionDetected && !previousMotionState)
+    {
+        pirDetections++;
+        visitCount = calculateVisitCount(pirDetections);
+        handleMotionDetection();
+
+        Serial.print("Motion detected! PIR count: ");
+        Serial.print(pirDetections);
+        Serial.print(", Visits: ");
+        Serial.println(visitCount);
+    }
+
+    previousMotionState = motionDetected;
+
+    // Check Bluetooth tag
+    tagDetected = isTagDetected();
+
+    // Calculate and set fan speed
+    currentFanSpeed = calculateFanSpeed(temperature, humidity);
+    setFanSpeed(currentFanSpeed);
+
+    // Set LED color based on fan status
+    if (currentFanSpeed > 0)
+    {
+        setLEDColor(0, 0, 255); // Blue when fan is on
+    }
+    else
+    {
+        setLEDColor(0, 0, 0); // Off when fan is off
+    }
+
+    // Update display
+    updateDisplay(temperature, humidity, visitCount, tagDetected);
+
+    delay(100);
 }
