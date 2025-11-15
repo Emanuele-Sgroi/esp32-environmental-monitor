@@ -24,4 +24,7 @@
 #define TEMP_THRESHOLD 26.0     // Celsius
 #define HUMIDITY_THRESHOLD 70.0 // Percentage
 
+// PIR Debounce (milliseconds)
+#define PIR_RETRIGGER_DELAY 3000 // Ignore motion for 3 seconds after detection
+
 #endif
