@@ -20,6 +20,10 @@
 #define LED_GREEN 17
 #define LED_BLUE 18
 
+// FAN constants
+#define FAN_INA 25
+#define FAN_INB 26
+
 // create a display object
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
@@ -34,6 +38,9 @@ void setup()
     pinMode(LED_RED, OUTPUT);
     pinMode(LED_GREEN, OUTPUT);
     pinMode(LED_BLUE, OUTPUT);
+
+    pinMode(FAN_INA, OUTPUT);
+    pinMode(FAN_INB, OUTPUT);
 
     Serial.begin(115200); // USB communication
     Wire.begin(21, 22);   // Initialize I2C
@@ -75,4 +82,11 @@ void loop()
     delay(100);
     digitalWrite(LED_GREEN, LOW);
     delay(100);
+
+    digitalWrite(FAN_INA, HIGH);
+    digitalWrite(FAN_INB, LOW);
+    delay(2000);
+    digitalWrite(FAN_INA, LOW);
+    digitalWrite(FAN_INB, LOW);
+    delay(2000);
 }
