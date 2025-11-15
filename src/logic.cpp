@@ -7,24 +7,28 @@ int calculateFanSpeed(float temperature, float humidity)
 {
     int speed = 0;
 
-    // check temperature
+    // Check temperature
     if (temperature > TEMP_THRESHOLD)
     {
         float tempDiff = temperature - TEMP_THRESHOLD;
         // For every degree above threshold, increase speed by 25
-        // Max out at 255 (full speed)
         speed = (int)(tempDiff * 25);
     }
 
-    // check humidity
+    // Check humidity
     if (humidity > HUMIDITY_THRESHOLD)
     {
         float humidityDiff = humidity - HUMIDITY_THRESHOLD;
-
         // For every 5% above threshold, increase speed by 25
         int humiditySpeed = (int)(humidityDiff / 5.0 * 25);
         // Use the higher of temperature-based or humidity-based speed
         speed = max(speed, humiditySpeed);
+    }
+
+    // If fan should run, ensure minimum speed
+    if (speed > 0 && speed < 100)
+    {
+        speed = 100; // Minimum speed to overcome motor inertia
     }
 
     // Constrain to valid PWM range

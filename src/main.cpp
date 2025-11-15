@@ -17,6 +17,7 @@ int currentFanSpeed = 0;
 
 // Timing variables
 unsigned long lastTempHumidityRead = 0;
+unsigned long lastMotionDetectionTime = 0;
 
 void setup()
 {
@@ -56,11 +57,13 @@ void loop()
     motionDetected = isMotionDetected();
 
     // If motion just detected (transition from LOW to HIGH)
-    if (motionDetected && !previousMotionState)
+    if (motionDetected && !previousMotionState &&
+        (currentMillis - lastMotionDetectionTime >= PIR_RETRIGGER_DELAY))
     {
         pirDetections++;
         visitCount = calculateVisitCount(pirDetections);
         handleMotionDetection();
+        lastMotionDetectionTime = currentMillis;
 
         Serial.print("Motion detected! PIR count: ");
         Serial.print(pirDetections);
