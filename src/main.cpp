@@ -9,10 +9,16 @@
 
 // Define constants
 
+// oled constants
 #define SCREEN_WIDTH 128    // size
 #define SCREEN_HEIGHT 64    // size
 #define OLED_RESET -1       // pin
 #define SCREEN_ADDRESS 0x3C // address
+
+// RGB led constants
+#define LED_RED 16
+#define LED_GREEN 17
+#define LED_BLUE 18
 
 // create a display object
 
@@ -24,6 +30,11 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 void setup()
 {
+
+    pinMode(LED_RED, OUTPUT);
+    pinMode(LED_GREEN, OUTPUT);
+    pinMode(LED_BLUE, OUTPUT);
+
     Serial.begin(115200); // USB communication
     Wire.begin(21, 22);   // Initialize I2C
 
@@ -48,4 +59,20 @@ void setup()
 
 void loop()
 {
+    digitalWrite(LED_RED, HIGH);
+    delay(500);
+    digitalWrite(LED_RED, LOW);
+    delay(500);
+    digitalWrite(LED_BLUE, HIGH);
+    delay(500);
+    digitalWrite(LED_BLUE, LOW);
+    delay(500);
+    digitalWrite(LED_GREEN, HIGH);
+    delay(100);
+    digitalWrite(LED_GREEN, LOW);
+    delay(100);
+    digitalWrite(LED_GREEN, HIGH);
+    delay(100);
+    digitalWrite(LED_GREEN, LOW);
+    delay(100);
 }
