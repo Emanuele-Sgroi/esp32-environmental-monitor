@@ -18,7 +18,7 @@
 #define SCREEN_ADDRESS 0x3C
 
 // Sensor Reading Intervals (milliseconds)
-#define TEMP_HUMIDITY_INTERVAL 120000 // 2 minutes
+#define TEMP_HUMIDITY_INTERVAL 60000 // 1 minutes
 
 // Thresholds
 #define TEMP_THRESHOLD 26.0     // Celsius

@@ -40,7 +40,7 @@ void loop()
 {
     unsigned long currentMillis = millis();
 
-    // Read temperature and humidity every 2 minutes
+    // Read temperature and humidity
     if (currentMillis - lastTempHumidityRead >= TEMP_HUMIDITY_INTERVAL)
     {
         readTempHumidity(temperature, humidity);
