@@ -13,7 +13,7 @@ void initActuators()
     pinMode(PIN_LED_GREEN, OUTPUT);
     pinMode(PIN_LED_BLUE, OUTPUT);
 
-    // Tun fan and led off initially
+    // Turn fan and led off initially
     stopFan();
     setLEDColor(0, 0, 0);
 
